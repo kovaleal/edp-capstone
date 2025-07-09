@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const productSchema = new mongoose.Schema({
+const catalogSchema = new mongoose.Schema({
     product_id: {
         type: String,
         required: true,
@@ -36,27 +36,33 @@ const productSchema = new mongoose.Schema({
     },
     about_product: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     user_id: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     user_name: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     review_id: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     review_title: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     review_content: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     img_link: {
         type: String,
@@ -64,12 +70,13 @@ const productSchema = new mongoose.Schema({
     },
     product_link: {
         type: String,
-        required: true
+        required: true,
+        select: false
     }
 }, {
   collection: 'products'
 });
 
-const Product = mongoose.model('Product', productSchema);
+const Catalog = mongoose.model('Catalog', catalogSchema);
 
-module.exports = Product;
+module.exports = Catalog;
