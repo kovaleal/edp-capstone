@@ -68,6 +68,22 @@ app.post('/api/orders', async (req, res) => {
     }
 });
 
+// Fetch list of categories
+app.get('/api/categories', async (req, res) => {
+    try {
+        const categories = await Products.find( {}, {_id: 0, category: 1} );
+        if (!categories) {
+            return res.status(404).json({ error: 'Categories unavailable' });
+        }
+        const catList = categories.map(item => item.category);
+        const catUnique = [... new Set(catList)].sort();
+        res.json(catUnique);
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Fetch entire catalog (lightweight)
 app.get('/api/products/catalog', async (req, res) => {
     const filter = '-about_product -user_id -user_name -review_id -review_title -review_content -product_link';
