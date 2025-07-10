@@ -96,7 +96,7 @@ app.get('/api/categories/top', async (req, res) => {
         }
 
         const catList = categories.map(item => {
-            return item.category.split('|')[0].split('&')[0].split(/(?=[A-Z])/).join(' ');
+            return item.category.split('|')[0].split('&')[0].split(/(?=[A-Z])/)[0];
         });
         const catUnique = [... new Set(catList)].sort();
 
