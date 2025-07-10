@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const mongoose = require('mongoose');
-var seedrandom = require('seedrandom');
+const seedrandom = require('seedrandom');
 
 const port = process.env.PORT;
 const mongo_url = process.env.MONGO_URI;
