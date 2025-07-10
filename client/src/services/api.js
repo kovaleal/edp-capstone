@@ -185,15 +185,21 @@ class ApiService {
       const data = await this.request(`/api/products/${id}`);
       return transformProduct(data);
     } catch (error) {
-      console.error(`Failed to fetch product ${id}:`, error);
-      return null;
+      console.error(
+        `Failed to fetch product ${id} from backend, trying sample data:`,
+        error
+      );
+      // Fallback to sample data when backend is not available
+      const sampleData = this.getSampleProducts();
+      const sampleProduct = sampleData.find((p) => p.product_id === id);
+      return sampleProduct ? transformProduct(sampleProduct) : null;
     }
   }
 
   // Categories API
   async getCategories() {
     try {
-      const data = await this.request("/api/categories");
+      const data = await this.request("/api/categories/top");
       return data;
     } catch (error) {
       console.error(

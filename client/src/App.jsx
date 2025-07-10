@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 import "./App.css";
 
 function App() {
@@ -32,16 +33,7 @@ function App() {
               </div>
             }
           />
-          <Route
-            path="/product/:id"
-            element={
-              <div className="container px-4 py-8">
-                <h1 className="text-3xl font-bold">
-                  Product Details - Coming Soon
-                </h1>
-              </div>
-            }
-          />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route
             path="*"
             element={

@@ -104,7 +104,6 @@ export default function HomePage() {
                 <span className="text-slate-700 font-medium">
                   New arrivals every week
                 </span>
-                <ArrowRight className="h-4 w-4 text-slate-500 group-hover:translate-x-1 transition-transform duration-300" />
               </div>
 
               <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
@@ -145,37 +144,42 @@ export default function HomePage() {
                   </div>
                 </Link>
               </div>
+            </div>
+          </div>
+        </section>
 
-              {/* Stats */}
-              <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8">
-                {[
-                  { label: "Happy Customers", value: "1M+" },
-                  { label: "Products", value: "50K+" },
-                  { label: "Reviews", value: "4.9" },
-                  { label: "Countries", value: "100+" },
-                ].map((stat, index) => (
-                  <div key={index} className="text-center group">
-                    <div className="glass-stronger rounded-2xl p-6 border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                      <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 drop-shadow-sm">
-                        {stat.value}
-                      </div>
-                      <div className="text-slate-600 font-medium">
-                        {stat.label}
-                      </div>
-                      {stat.label === "Reviews" && (
-                        <div className="flex justify-center mt-2">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                            />
-                          ))}
-                        </div>
-                      )}
+        {/* Features Section */}
+        <section className="relative py-24">
+          <div className="absolute inset-0 liquid-gradient-2 opacity-30"></div>
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent drop-shadow-sm">
+                Why Choose Bamazon?
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div
+                    key={index}
+                    className="group relative text-center glass-stronger rounded-3xl p-8 border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105"
+                  >
+                    <div
+                      className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} text-white mb-6 shadow-lg group-hover:scale-110 transition-all duration-300`}
+                    >
+                      <Icon className="h-8 w-8" />
                     </div>
+                    <h3 className="text-xl font-bold text-slate-900 mb-3 drop-shadow-sm">
+                      {feature.title}
+                    </h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      {feature.description}
+                    </p>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -227,42 +231,6 @@ export default function HomePage() {
                   </div>
                 </Link>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="relative py-24">
-          <div className="absolute inset-0 liquid-gradient-2 opacity-30"></div>
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent drop-shadow-sm">
-                Why Choose Bamazon?
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {features.map((feature, index) => {
-                const Icon = feature.icon;
-                return (
-                  <div
-                    key={index}
-                    className="group relative text-center glass-stronger rounded-3xl p-8 border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105"
-                  >
-                    <div
-                      className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} text-white mb-6 shadow-lg group-hover:scale-110 transition-all duration-300`}
-                    >
-                      <Icon className="h-8 w-8" />
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-3 drop-shadow-sm">
-                      {feature.title}
-                    </h3>
-                    <p className="text-slate-600 leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </div>
-                );
-              })}
             </div>
           </div>
         </section>
