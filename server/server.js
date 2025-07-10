@@ -172,9 +172,10 @@ app.get('/api/products/featured/:num', async (req, res) => {
             return res.status(404).json({ error: 'Featured products unavailable' });
         }
 
-        const topRated = catalog.filter(product => {
+        let topRated = catalog.filter(product => {
             return parseFloat(product.rating) > 4.4;
         });
+        //console.log(`Found ${topRated.length} products rated >4.4`);
 
         let featured = [];
         let len = topRated.length;
@@ -184,12 +185,11 @@ app.get('/api/products/featured/:num', async (req, res) => {
 
         while (featured.length < numFeatured) {
             ind = ((rng.int32() % len) + len) % len;
-            featured = { featured, ...topRated[ind] };
-            //delete topRated[ind];
+            featured = [ ...featured, topRated[ind] ];
+            delete topRated[ind];
             len -= 1;
         }
 
-        console.log(featured);
         res.json(featured);
     } catch (error) {
         console.error(`Error fetching featured products:`, error);
