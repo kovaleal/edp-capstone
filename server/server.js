@@ -95,7 +95,9 @@ app.get('/api/categories/top', async (req, res) => {
             return res.status(404).json({ error: 'Categories unavailable' });
         }
 
-        const catList = categories.map(item => item.category.split('|')[0]);
+        const catList = categories.map(item => {
+            return item.category.split('|')[0].split('&')[0].split(/(?=[A-Z])/).join(' ');
+        });
         const catUnique = [... new Set(catList)].sort();
 
         res.json(catUnique);
@@ -120,8 +122,32 @@ app.get('/api/products/catalog', async (req, res) => {
     }
 });
 
+// Fetch catalog by category
+app.get('/api/products/catalog/:cat', async (req, res) => {
+    const cat = req.params.cat;
+    const categoryAmp = cat.replace(' ', '&');
+    const categoryJoin = cat.replace(' ', '');
+
+    const filter = '-about_product -user_id -user_name -review_id -review_title -review_content -product_link';
+    try {
+        const catalog = await Products.find().select(filter);
+        if (!catalog) {
+            return res.status(404).json({ error: 'Catalog unavailable' });
+        }
+
+        const catalogFlt = catalog.filter(product => {
+            return product.category.startsWith(categoryAmp) || product.category.startsWith(categoryJoin);
+        });
+
+        res.json(catalogFlt);
+    } catch (error) {
+        console.error('Error fetching product catalog:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Fetch 'num' products from catalog
-app.get('/api/products/catalog/:num', async (req, res) => {
+app.get('/api/products/catalog/n/:num', async (req, res) => {
     const num = req.params.num;
     const filter = '-about_product -user_id -user_name -review_id -review_title -review_content -product_link';
     try {
@@ -137,8 +163,8 @@ app.get('/api/products/catalog/:num', async (req, res) => {
 });
 
 // Fetch featured products
-app.get('/api/products/featured', async (req, res) => {
-    const numFeatured = 5;
+app.get('/api/products/featured/:num', async (req, res) => {
+    const numFeatured = req.params.num;
     const filter = '-about_product -user_id -user_name -review_id -review_title -review_content -product_link';
     try {
         const catalog = await Products.find().select(filter);
@@ -150,11 +176,21 @@ app.get('/api/products/featured', async (req, res) => {
             return parseFloat(product.rating) > 4.4;
         });
 
+        let featured = [];
+        let len = topRated.length;
+        let ind = 0;
         const seed = new Date().getDate();
         const rng = seedrandom(seed);
-        //while ()
 
-        res.json(topRated);
+        while (featured.length < numFeatured) {
+            ind = ((rng.int32() % len) + len) % len;
+            featured = { featured, ...topRated[ind] };
+            //delete topRated[ind];
+            len -= 1;
+        }
+
+        console.log(featured);
+        res.json(featured);
     } catch (error) {
         console.error(`Error fetching featured products:`, error);
         res.status(500).json({ error: 'Internal server error' });
