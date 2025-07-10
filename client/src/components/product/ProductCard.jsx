@@ -1,10 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export default function ProductCard({ product }) {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  // Default fallback image - a clean product placeholder
+  const defaultImage =
+    "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&h=500&fit=crop&q=80";
+
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -48,13 +64,22 @@ export default function ProductCard({ product }) {
         <CardContent className="relative p-0 z-10">
           {/* Product Image */}
           <div className="relative aspect-square overflow-hidden rounded-t-3xl bg-gradient-to-br from-slate-200/30 to-slate-100/30 backdrop-blur-sm">
-            {product.image ? (
+            {/* Loading placeholder */}
+            {imageLoading && (
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-200/50 to-slate-100/50 backdrop-blur-md flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+
+            {product.image && !imageError ? (
               <>
                 <img
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-110 group-hover:brightness-110 group-hover:saturate-110"
                   loading="lazy"
+                  onError={handleImageError}
+                  onLoad={handleImageLoad}
                 />
                 {/* Glass overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-white/10 opacity-60 group-hover:opacity-80 transition-all duration-500" />
@@ -62,14 +87,27 @@ export default function ProductCard({ product }) {
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
               </>
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-200/50 to-slate-100/50 backdrop-blur-md">
-                <div className="text-center text-slate-500">
-                  <div className="w-16 h-16 mx-auto mb-2 bg-white/30 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg border border-white/30">
-                    <span className="text-2xl opacity-70">📦</span>
+              <>
+                {/* Fallback image or default placeholder */}
+                <img
+                  src={defaultImage}
+                  alt={product.name || "Product"}
+                  className="w-full h-full object-cover object-center transition-all duration-700 ease-out group-hover:scale-110 group-hover:brightness-110 group-hover:saturate-110 opacity-80"
+                  loading="lazy"
+                  onLoad={handleImageLoad}
+                />
+                {/* Glass overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-white/10 opacity-60 group-hover:opacity-80 transition-all duration-500" />
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+
+                {/* Image error indicator */}
+                {imageError && (
+                  <div className="absolute bottom-2 right-2 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-lg text-xs text-slate-600 border border-white/40">
+                    Default Image
                   </div>
-                  <span className="text-sm font-medium">No Image</span>
-                </div>
-              </div>
+                )}
+              </>
             )}
 
             {/* Floating badges with glass effect */}

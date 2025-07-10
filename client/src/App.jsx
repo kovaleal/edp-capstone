@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import HomePage from "./pages/HomePage";
+import ProductsPage from "./pages/ProductsPage";
 import "./App.css";
 
 function App() {
@@ -10,16 +11,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route
-            path="/products"
-            element={
-              <div className="container px-4 py-8">
-                <h1 className="text-3xl font-bold">
-                  Products Page - Coming Soon
-                </h1>
-              </div>
-            }
-          />
+          <Route path="/products" element={<ProductsPage />} />
           <Route
             path="/search"
             element={

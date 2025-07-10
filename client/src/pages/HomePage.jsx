@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import ProductGrid from "../components/product/ProductGrid";
+import apiService from "../services/api";
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
@@ -18,136 +19,29 @@ export default function HomePage() {
   const [featuredCategories, setFeaturedCategories] = useState([]);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setProducts([
-        {
-          id: 1,
-          name: "Premium Wireless Headphones",
-          price: 299.99,
-          originalPrice: 399.99,
-          rating: 4.8,
-          category: "Electronics",
-          image:
-            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
-          onSale: true,
-          stock: 15,
-        },
-        {
-          id: 2,
-          name: "Smart Fitness Watch",
-          price: 249.99,
-          rating: 4.6,
-          category: "Electronics",
-          image:
-            "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop",
-          stock: 8,
-        },
-        {
-          id: 3,
-          name: "Minimalist Desk Lamp",
-          price: 89.99,
-          originalPrice: 129.99,
-          rating: 4.7,
-          category: "Home & Garden",
-          image:
-            "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&h=500&fit=crop",
-          onSale: true,
-          stock: 12,
-        },
-        {
-          id: 4,
-          name: "Organic Cotton T-Shirt",
-          price: 34.99,
-          rating: 4.5,
-          category: "Clothing",
-          image:
-            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=500&fit=crop",
-          stock: 25,
-        },
-        {
-          id: 5,
-          name: "Professional Camera Lens",
-          price: 899.99,
-          rating: 4.9,
-          category: "Electronics",
-          image:
-            "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=500&h=500&fit=crop",
-          stock: 3,
-        },
-        {
-          id: 6,
-          name: "Yoga Exercise Mat",
-          price: 49.99,
-          originalPrice: 69.99,
-          rating: 4.4,
-          category: "Sports",
-          image:
-            "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&h=500&fit=crop",
-          onSale: true,
-          stock: 18,
-        },
-        {
-          id: 7,
-          name: "Artisan Coffee Mug Set",
-          price: 59.99,
-          rating: 4.6,
-          category: "Home & Garden",
-          image:
-            "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=500&h=500&fit=crop",
-          stock: 14,
-        },
-        {
-          id: 8,
-          name: "Vintage Leather Backpack",
-          price: 179.99,
-          originalPrice: 249.99,
-          rating: 4.8,
-          category: "Clothing",
-          image:
-            "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&h=500&fit=crop",
-          onSale: true,
-          stock: 7,
-        },
-      ]);
+    const loadData = async () => {
+      try {
+        setLoading(true);
 
-      setFeaturedCategories([
-        {
-          name: "Electronics",
-          description: "Latest tech gadgets and innovations",
-          image:
-            "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&h=400&fit=crop",
-          itemCount: "1,200+ items",
-          href: "/category/electronics",
-        },
-        {
-          name: "Fashion",
-          description: "Trendy clothing and accessories",
-          image:
-            "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop",
-          itemCount: "2,800+ items",
-          href: "/category/clothing",
-        },
-        {
-          name: "Home & Garden",
-          description: "Beautiful home decor and essentials",
-          image:
-            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop",
-          itemCount: "950+ items",
-          href: "/category/home-garden",
-        },
-        {
-          name: "Sports & Fitness",
-          description: "Gear for active lifestyles",
-          image:
-            "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop",
-          itemCount: "650+ items",
-          href: "/category/sports",
-        },
-      ]);
+        // Load featured products and categories from API
+        const [featuredProducts, categories] = await Promise.all([
+          apiService.getFeaturedProducts(8),
+          apiService.getProductsByCategory(),
+        ]);
 
-      setLoading(false);
-    }, 1000);
+        setProducts(featuredProducts);
+        setFeaturedCategories(categories);
+      } catch (error) {
+        console.error("Failed to load homepage data:", error);
+        // Fallback to empty arrays if API fails
+        setProducts([]);
+        setFeaturedCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   const features = [
