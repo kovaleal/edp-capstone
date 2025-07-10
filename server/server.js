@@ -27,16 +27,43 @@ mongoose.connect(mongo_url)
 });
 
 // Routes
-// Fetch past orders
+// Fetch all past orders
 app.get('/api/orders', async (req, res) => {
     try {
-        const orders = await Orders.find(); 
+        const orders = await Orders.find().select('-_id -__v'); 
         if (!orders) {
             return res.status(404).json({ error: 'Past orders unavailable' });
         }
         res.json(orders);
     } catch (error) {
         console.error('Error fetching past orders:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Fetch past order by order ID
+app.get('/api/orders/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const order = await Orders.findOne({ order_id: id }).select('-_id -__v');
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+        res.json(order);
+    } catch (error) {
+        console.error(`Error fetching order id=${id}:`, error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Add new order to database
+app.post('/api/orders', async (req, res) => {
+    try {
+        const newOrder = new Orders(req.body);
+        await newOrder.save();
+        res.status(201).json(newOrder);
+    } catch (error) {
+        console.error(`Error adding order:`, error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -72,11 +99,11 @@ app.get('/api/products/catalog/:num', async (req, res) => {
     }
 });
 
-// Fetch complete item listing
+// Fetch item listing by product ID
 app.get('/api/products/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        const product = await Products.findOne({ product_id: id });
+        const product = await Products.findOne({ product_id: id }).select('-_id -__v');
         if (!product) {
             return res.status(404).json({ error: 'Product not found' });
         }
