@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Facebook,
@@ -10,20 +10,43 @@ import {
   MapPin,
   Heart,
 } from "lucide-react";
+import apiService from "../services/api";
 
 export default function Footer() {
+  const [categories, setCategories] = useState([]);
+
+  // Load categories from API
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categoriesData = await apiService.getCategories();
+        // Show top 4 categories in footer
+        setCategories(categoriesData.slice(0, 4));
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+        // Fallback to default categories
+        setCategories(["Electronics", "Clothing", "Home", "Sports"]);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  const dynamicShopLinks = categories.map((category) => ({
+    name: category,
+    href: `/products?category=${encodeURIComponent(category)}`,
+  }));
+
   const footerLinks = {
     Shop: [
-      { name: "Electronics", href: "/category/electronics" },
-      { name: "Clothing", href: "/category/clothing" },
-      { name: "Home & Garden", href: "/category/home-garden" },
-      { name: "Sports", href: "/category/sports" },
+      ...dynamicShopLinks,
       { name: "Best Sellers", href: "/bestsellers" },
       { name: "New Arrivals", href: "/new" },
     ],
     "Customer Service": [
       { name: "Contact Us", href: "/contact" },
       { name: "FAQ", href: "/faq" },
+      { name: "Order History", href: "/orders" },
       { name: "Shipping Info", href: "/shipping" },
       { name: "Returns", href: "/returns" },
       { name: "Size Guide", href: "/size-guide" },

@@ -1,5 +1,51 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
+// Normalize category names to match top categories format
+const normalizeCategoryName = (category) => {
+  if (!category) return "";
+
+  // Handle special cases and extract the first meaningful word
+  const normalizedMap = {
+    HomeImprovements: "Home",
+    HomeImprovement: "Home",
+    "Home&Garden": "Home",
+    HomeGarden: "Home",
+    "Computers&Accessories": "Computers",
+    ComputersAccessories: "Computers",
+    MusicalInstruments: "Musical",
+    "Musical Instruments": "Musical",
+    OfficeProducts: "Office",
+    "Office Products": "Office",
+    Electronics: "Electronics",
+    Clothing: "Clothing",
+    Sports: "Sports",
+    Beauty: "Beauty",
+    Books: "Books",
+    Toys: "Toys",
+  };
+
+  // Check if we have a direct mapping
+  if (normalizedMap[category]) {
+    return normalizedMap[category];
+  }
+
+  // Extract first word before special characters
+  const firstWord = category.split(/[&|,\s]+/)[0];
+
+  // Return the first word, with special handling for known patterns
+  if (firstWord.toLowerCase().startsWith("home")) {
+    return "Home";
+  } else if (firstWord.toLowerCase().startsWith("computer")) {
+    return "Computers";
+  } else if (firstWord.toLowerCase().startsWith("musical")) {
+    return "Musical";
+  } else if (firstWord.toLowerCase().startsWith("office")) {
+    return "Office";
+  }
+
+  return firstWord;
+};
+
 // Transform backend product data to frontend format
 const transformProduct = (backendProduct) => {
   if (!backendProduct) return null;
@@ -15,7 +61,7 @@ const transformProduct = (backendProduct) => {
     ),
     rating: parseFloat(backendProduct.rating || 0),
     ratingCount: parseInt(backendProduct.rating_count || 0),
-    category: backendProduct.category,
+    category: normalizeCategoryName(backendProduct.category),
     image: backendProduct.img_link,
     description: backendProduct.about_product,
     onSale:
@@ -100,7 +146,7 @@ class ApiService {
       {
         product_id: "sample_3",
         product_name: "Minimalist Desk Lamp",
-        category: "Home & Garden",
+        category: "Home",
         discounted_price: "$89.99",
         actual_price: "$129.99",
         discount_percentage: "31%",
@@ -157,7 +203,16 @@ class ApiService {
   }
 
   getSampleCategories() {
-    return ["Electronics", "Clothing", "Home & Garden", "Sports"];
+    return [
+      "Electronics",
+      "Clothing",
+      "Home",
+      "Sports",
+      "Musical",
+      "Office",
+      "Car",
+      "Health",
+    ];
   }
 
   // Products API
@@ -234,14 +289,27 @@ class ApiService {
 
   async createOrder(orderData) {
     try {
-      const data = await this.request("/api/orders", {
+      const response = await this.request("/api/orders", {
         method: "POST",
         body: JSON.stringify(orderData),
       });
-      return transformOrder(data);
+
+      // The backend returns { success: true, order: {...}, message: "..." }
+      if (response.success) {
+        return {
+          success: true,
+          order: transformOrder(response.order),
+          message: response.message,
+        };
+      } else {
+        throw new Error(response.error || "Failed to create order");
+      }
     } catch (error) {
       console.error("Failed to create order:", error);
-      throw error;
+      return {
+        success: false,
+        error: error.message || "Failed to create order",
+      };
     }
   }
 
@@ -254,8 +322,11 @@ class ApiService {
 
       // Filter by category if specified
       if (category) {
+        const normalizedSearchCategory = normalizeCategoryName(category);
         filtered = filtered.filter(
-          (product) => product.category.toLowerCase() === category.toLowerCase()
+          (product) =>
+            product.category.toLowerCase() ===
+            normalizedSearchCategory.toLowerCase()
         );
       }
 
@@ -278,7 +349,7 @@ class ApiService {
     }
   }
 
-  // Get featured products (you can customize the logic)
+  // Get featured products
   async getFeaturedProducts(limit = 8) {
     try {
       const products = await this.getProducts(limit * 2); // Get more to have variety
@@ -306,7 +377,7 @@ class ApiService {
 
       return categories.map((category) => {
         const categoryProducts = products.filter(
-          (p) => p.category === category
+          (p) => p.category.toLowerCase() === category.toLowerCase()
         );
 
         return {
@@ -314,7 +385,7 @@ class ApiService {
           description: this.getCategoryDescription(category),
           image: this.getCategoryImage(category),
           itemCount: `${categoryProducts.length} items`,
-          href: `/category/${category.toLowerCase().replace(/\s+/g, "-")}`,
+          href: `/products?category=${encodeURIComponent(category)}`,
         };
       });
     } catch (error) {
@@ -328,11 +399,16 @@ class ApiService {
     const descriptions = {
       Electronics: "Latest tech gadgets and innovations",
       Clothing: "Trendy clothing and accessories",
-      "Home & Garden": "Beautiful home decor and essentials",
+      Home: "Beautiful home decor and essentials",
       Sports: "Gear for active lifestyles",
       Books: "Knowledge and entertainment for all ages",
       Toys: "Fun and educational toys for children",
       Beauty: "Premium beauty and personal care products",
+      Computers: "Computing devices and accessories",
+      Musical: "Musical instruments and audio equipment",
+      Office: "Office supplies and productivity tools",
+      Car: "Automotive parts and accessories",
+      Health: "Health and wellness products",
     };
     return descriptions[category] || "Quality products at great prices";
   }
@@ -343,8 +419,7 @@ class ApiService {
         "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&h=400&fit=crop",
       Clothing:
         "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop",
-      "Home & Garden":
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop",
+      Home: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop",
       Sports:
         "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop",
       Books:
@@ -352,6 +427,15 @@ class ApiService {
       Toys: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600&h=400&fit=crop",
       Beauty:
         "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&h=400&fit=crop",
+      Computers:
+        "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=600&h=400&fit=crop",
+      Musical:
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&h=400&fit=crop",
+      Office:
+        "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=600&h=400&fit=crop",
+      Car: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=600&h=400&fit=crop",
+      Health:
+        "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop",
     };
     return (
       images[category] ||
@@ -374,3 +458,4 @@ class ApiService {
 // Create and export a singleton instance
 const apiService = new ApiService();
 export default apiService;
+export { normalizeCategoryName };

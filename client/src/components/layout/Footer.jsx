@@ -27,8 +27,18 @@ export default function Footer() {
                 Products
               </Link>
               <Link
-                to="/categories"
+                to="/#categories"
                 className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                onClick={(e) => {
+                  // If we're already on the homepage, prevent navigation and scroll
+                  if (window.location.pathname === "/") {
+                    e.preventDefault();
+                    document.getElementById("categories")?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }
+                }}
               >
                 Categories
               </Link>

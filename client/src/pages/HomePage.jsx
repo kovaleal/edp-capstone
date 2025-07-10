@@ -44,6 +44,19 @@ export default function HomePage() {
     loadData();
   }, []);
 
+  // Handle hash navigation for categories section
+  useEffect(() => {
+    if (window.location.hash === "#categories") {
+      // Small delay to ensure the component is fully rendered
+      setTimeout(() => {
+        document.getElementById("categories")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, []);
+
   const features = [
     {
       icon: Truck,
@@ -134,15 +147,20 @@ export default function HomePage() {
                   </div>
                 </Link>
 
-                <Link
-                  to="/categories"
+                <button
+                  onClick={() => {
+                    document.getElementById("categories")?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
                   className="group px-8 py-4 text-lg font-semibold glass hover:glass-stronger border border-white/30 text-slate-700 hover:text-blue-600 rounded-2xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   <div className="flex items-center space-x-3">
                     <span>Browse Categories</span>
                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -185,7 +203,7 @@ export default function HomePage() {
         </section>
 
         {/* Featured Categories */}
-        <section className="relative py-24">
+        <section id="categories" className="relative py-24">
           <div className="absolute inset-0 liquid-gradient-3 opacity-20"></div>
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">

@@ -12,11 +12,13 @@ import {
   Package,
   Shield,
   Truck,
+  Check,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import ProductCard from "../components/product/ProductCard";
 import apiService from "../services/api";
+import { useCart } from "../hooks/useCart";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -30,10 +32,13 @@ export default function ProductDetailPage() {
   const [imageLoading, setImageLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+
+  const { addToCart, isInCart } = useCart();
 
   // Default fallback image
-  const defaultImage =
-    "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=800&fit=crop&q=80";
+  const defaultImage = "../../No_Image_Available.jpg";
 
   // Scroll to top when component mounts or product ID changes
   useEffect(() => {
@@ -95,11 +100,19 @@ export default function ProductDetailPage() {
     setQuantity(newQuantity);
   };
 
-  const handleAddToCart = () => {
-    // TODO: Implement cart functionality
-    console.log(`Adding ${quantity} of product ${id} to cart`);
-    // For now, just show a simple alert
-    alert(`Added ${quantity} ${product.name} to cart!`);
+  const handleAddToCart = async () => {
+    if (isAddingToCart || !product || product.stock === 0) return;
+
+    setIsAddingToCart(true);
+    try {
+      addToCart(product, quantity);
+      setJustAdded(true);
+      setTimeout(() => setJustAdded(false), 3000); // Reset after 3 seconds
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const handleShare = async () => {
@@ -450,12 +463,47 @@ export default function ProductDetailPage() {
 
               <button
                 onClick={handleAddToCart}
-                className="w-full flex items-center justify-center space-x-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                disabled={isAddingToCart || product.stock === 0}
+                className={`w-full flex items-center justify-center space-x-3 font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
+                  product.stock === 0
+                    ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+                    : justAdded
+                    ? "bg-green-600 hover:bg-green-700 text-white"
+                    : isInCart(product.id)
+                    ? "bg-blue-700 hover:bg-blue-800 text-white"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
               >
-                <ShoppingCart className="h-6 w-6" />
-                <span>
-                  Add to Cart • {formatPrice(product.price * quantity)}
-                </span>
+                {isAddingToCart ? (
+                  <>
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Adding to Cart...</span>
+                  </>
+                ) : justAdded ? (
+                  <>
+                    <Check className="h-6 w-6" />
+                    <span>Added to Cart!</span>
+                  </>
+                ) : product.stock === 0 ? (
+                  <>
+                    <Package className="h-6 w-6" />
+                    <span>Out of Stock</span>
+                  </>
+                ) : isInCart(product.id) ? (
+                  <>
+                    <ShoppingCart className="h-6 w-6" />
+                    <span>
+                      Add More • {formatPrice(product.price * quantity)}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-6 w-6" />
+                    <span>
+                      Add to Cart • {formatPrice(product.price * quantity)}
+                    </span>
+                  </>
+                )}
               </button>
             </div>
 

@@ -16,7 +16,7 @@ export default function ProductsPage() {
   );
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [viewMode, setViewMode] = useState("grid");
+
   const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -24,7 +24,7 @@ export default function ProductsPage() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [paginatedProducts, setPaginatedProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [totalPages, setTotalPages] = useState(1);
 
   // Load initial data
@@ -159,6 +159,11 @@ export default function ProductsPage() {
     setSearchParams(params);
   }, [searchQuery, selectedCategory, setSearchParams]);
 
+  // Scroll to top when component loads or URL parameters change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [searchParams]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     // Search is handled by the useEffect above
@@ -218,30 +223,6 @@ export default function ProductsPage() {
               <span>Filters</span>
             </button>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center glass-stronger rounded-xl border border-white/30 shadow-lg overflow-hidden">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-3 transition-all duration-300 ${
-                  viewMode === "grid"
-                    ? "bg-blue-500/20 text-blue-700"
-                    : "text-slate-600 hover:text-blue-600 hover:bg-white/20"
-                }`}
-              >
-                <Grid className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-3 transition-all duration-300 ${
-                  viewMode === "list"
-                    ? "bg-blue-500/20 text-blue-700"
-                    : "text-slate-600 hover:text-blue-600 hover:bg-white/20"
-                }`}
-              >
-                <List className="h-5 w-5" />
-              </button>
-            </div>
-
             {/* Results Count */}
             <div className="glass-stronger px-4 py-3 rounded-xl border border-white/30 shadow-lg">
               <span className="text-slate-700 font-medium">
@@ -254,7 +235,7 @@ export default function ProductsPage() {
             <PaginationSelect
               itemsPerPage={itemsPerPage}
               onItemsPerPageChange={handleItemsPerPageChange}
-              options={[12, 24, 48, 96]}
+              options={[8, 16, 32, 64]}
             />
 
             {/* Clear Filters */}
