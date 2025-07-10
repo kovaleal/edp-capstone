@@ -244,7 +244,7 @@ const ProductCard = memo(function ProductCard({ product }) {
                 onClick={handleAddToCart}
                 disabled={isAdding || product.stock === 0}
                 className={`
-                  relative overflow-hidden px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 transform 
+                  relative overflow-hidden w-10 h-10 rounded-xl transition-all duration-200 transform 
                   ${
                     justAdded
                       ? "bg-green-500/90 text-white border border-green-400/50 scale-95"
@@ -262,8 +262,8 @@ const ProductCard = memo(function ProductCard({ product }) {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
                 )}
 
-                {/* Icon and text */}
-                <div className="relative flex items-center justify-center space-x-2">
+                {/* Icon only */}
+                <div className="relative flex items-center justify-center">
                   {isAdding ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   ) : justAdded ? (
@@ -271,17 +271,6 @@ const ProductCard = memo(function ProductCard({ product }) {
                   ) : (
                     <ShoppingCart className="h-4 w-4" />
                   )}
-                  <span className="hidden sm:inline">
-                    {isAdding
-                      ? "Adding..."
-                      : justAdded
-                      ? "Added!"
-                      : isInCart(product.id)
-                      ? "In Cart"
-                      : product.stock === 0
-                      ? "Out of Stock"
-                      : "Add to Cart"}
-                  </span>
                 </div>
               </button>
             </div>

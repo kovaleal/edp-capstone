@@ -86,50 +86,49 @@ export default function HomePage() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Floating background elements */}
+      {/* Simple background elements */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-blue-400/5 rounded-full blur-3xl float opacity-60"></div>
-        <div className="absolute top-1/3 right-1/5 w-80 h-80 bg-purple-400/5 rounded-full blur-3xl float-delayed opacity-60"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-green-400/5 rounded-full blur-3xl float opacity-60"></div>
+        <div className="absolute top-1/4 left-1/6 w-96 h-96 bg-blue-400/5 rounded-full blur-3xl opacity-60"></div>
+        <div className="absolute top-1/3 right-1/5 w-80 h-80 bg-purple-400/5 rounded-full blur-3xl opacity-60"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-green-400/5 rounded-full blur-3xl opacity-60"></div>
       </div>
 
       <main className="relative z-10">
         {/* Hero Section */}
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-          {/* Animated background layers */}
-          <div className="absolute inset-0 liquid-gradient-1 opacity-60"></div>
-          <div className="absolute inset-0 liquid-gradient-2 opacity-30"></div>
+          {/* Simple gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50"></div>
 
           {/* Glass morphism overlay */}
-          <div className="absolute inset-0 glass-subtle"></div>
+          <div className="absolute inset-0 glass"></div>
 
-          {/* Floating decorative elements */}
-          <div className="absolute top-20 left-10 w-32 h-32 glass rounded-full blur-sm float opacity-40"></div>
-          <div className="absolute top-40 right-20 w-24 h-24 glass-stronger rounded-full blur-sm float-delayed opacity-50"></div>
-          <div className="absolute bottom-32 left-1/4 w-20 h-20 glass rounded-full blur-sm float opacity-40"></div>
-          <div className="absolute bottom-20 right-1/3 w-16 h-16 glass-stronger rounded-full blur-sm float-delayed opacity-50"></div>
+          {/* Simple decorative elements */}
+          <div className="absolute top-20 left-10 w-32 h-32 glass rounded-full blur-sm opacity-40"></div>
+          <div className="absolute top-40 right-20 w-24 h-24 glass-stronger rounded-full blur-sm opacity-50"></div>
+          <div className="absolute bottom-32 left-1/4 w-20 h-20 glass rounded-full blur-sm opacity-40"></div>
+          <div className="absolute bottom-20 right-1/3 w-16 h-16 glass-stronger rounded-full blur-sm opacity-50"></div>
 
           <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="max-w-4xl mx-auto">
               {/* Hero badge */}
               <div className="inline-flex items-center space-x-2 glass-stronger px-6 py-3 rounded-full border border-white/30 shadow-xl mb-8 group hover:scale-105 transition-all duration-300">
-                <Sparkles className="h-5 w-5 text-yellow-500 animate-pulse" />
+                <Sparkles className="h-5 w-5 text-yellow-500" />
                 <span className="text-slate-700 font-medium">
                   New arrivals every week
                 </span>
               </div>
 
               <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-                <span className="bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent drop-shadow-2xl">
+                <span className="bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
                   Discover Amazing
                 </span>
                 <br />
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-2xl">
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Products
                 </span>
               </h1>
 
-              <p className="text-xl md:text-2xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto drop-shadow-sm">
+              <p className="text-xl md:text-2xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto">
                 Shop millions of products with unbeatable prices.
               </p>
 
@@ -168,10 +167,10 @@ export default function HomePage() {
 
         {/* Features Section */}
         <section className="relative py-24">
-          <div className="absolute inset-0 liquid-gradient-2 opacity-30"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-50/50 to-blue-50/50"></div>
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent drop-shadow-sm">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                 Why Choose Bamazon?
               </h2>
             </div>
@@ -189,7 +188,7 @@ export default function HomePage() {
                     >
                       <Icon className="h-8 w-8" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-3 drop-shadow-sm">
+                    <h3 className="text-xl font-bold text-slate-900 mb-3">
                       {feature.title}
                     </h3>
                     <p className="text-slate-600 leading-relaxed">
@@ -204,10 +203,10 @@ export default function HomePage() {
 
         {/* Featured Categories */}
         <section id="categories" className="relative py-24">
-          <div className="absolute inset-0 liquid-gradient-3 opacity-20"></div>
+          <div className="absolute inset-0 bg-gradient-to-l from-green-50/50 to-blue-50/50"></div>
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent drop-shadow-sm">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                 Shop by Category
               </h2>
               <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
@@ -234,10 +233,10 @@ export default function HomePage() {
                   </div>
 
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="text-xl font-bold mb-2 drop-shadow-lg group-hover:text-blue-200 transition-colors duration-300">
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-blue-200 transition-colors duration-300">
                       {category.name}
                     </h3>
-                    <p className="text-sm opacity-90 mb-2 drop-shadow-sm">
+                    <p className="text-sm opacity-90 mb-2">
                       {category.description}
                     </p>
                     <div className="flex items-center justify-between">
@@ -255,10 +254,10 @@ export default function HomePage() {
 
         {/* Featured Products */}
         <section className="relative py-24">
-          <div className="absolute inset-0 liquid-gradient-1 opacity-25"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50"></div>
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent drop-shadow-sm">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                 Featured Products
               </h2>
               <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">

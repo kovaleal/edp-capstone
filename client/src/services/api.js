@@ -352,18 +352,12 @@ class ApiService {
   // Get featured products
   async getFeaturedProducts(limit = 8) {
     try {
-      const products = await this.getProducts(limit * 2); // Get more to have variety
-
-      // Filter for products that are on sale or have high ratings
-      const featured = products.filter(
-        (product) => product.onSale || product.rating >= 4.5
-      );
-
-      // Return limited number, shuffled
-      return featured.sort(() => Math.random() - 0.5).slice(0, limit);
+      const data = await this.request(`/api/products/featured/${limit}`);
+      return data.map(transformProduct);
     } catch (error) {
       console.error("Failed to fetch featured products:", error);
-      return [];
+      // Fallback to sample data when backend is not available
+      return this.getSampleProducts().slice(0, limit);
     }
   }
 

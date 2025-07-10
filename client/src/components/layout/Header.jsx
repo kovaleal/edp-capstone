@@ -1,39 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Menu, X, ShoppingCart, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import apiService from "../../services/api";
 import { useCart } from "../../hooks/useCart";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { cartCount } = useCart();
   const navigate = useNavigate();
-
-  // Load categories from API
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const categoriesData = await apiService.getCategories();
-        // Show top 6 categories in navigation
-        setCategories(categoriesData.slice(0, 6));
-      } catch (error) {
-        console.error("Failed to load categories:", error);
-        // Fallback to default categories
-        setCategories(["Electronics", "Clothing", "Home", "Sports"]);
-      }
-    };
-
-    loadCategories();
-  }, []);
-
-  const navigation = categories.map((category) => ({
-    name: category,
-    href: `/products?category=${encodeURIComponent(category)}`,
-  }));
 
   // Handle search form submission
   const handleSearch = (e) => {
@@ -179,38 +155,9 @@ export default function Header() {
                     </span>
                   </div>
                 </Link>
-
-                {/* Mobile Navigation */}
-                <nav className="flex flex-col space-y-1">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors py-2 px-2 rounded-md hover:bg-slate-100"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </nav>
               </div>
             </SheetContent>
           </Sheet>
-        </div>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:block bg-slate-50/60 backdrop-blur-sm rounded-lg mx-4 mb-2 border border-slate-200/40">
-          <nav className="flex items-center justify-center space-x-6 px-4 py-2">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors py-1"
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
         </div>
       </div>
     </header>
