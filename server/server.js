@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const mongoose = require('mongoose');
+var seedrandom = require('seedrandom');
 
 const port = process.env.PORT;
 const mongo_url = process.env.MONGO_URI;
@@ -75,8 +76,28 @@ app.get('/api/categories', async (req, res) => {
         if (!categories) {
             return res.status(404).json({ error: 'Categories unavailable' });
         }
+
         const catList = categories.map(item => item.category);
         const catUnique = [... new Set(catList)].sort();
+
+        res.json(catUnique);
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Fetch top level categories
+app.get('/api/categories/top', async (req, res) => {
+    try {
+        const categories = await Products.find( {}, {_id: 0, category: 1} );
+        if (!categories) {
+            return res.status(404).json({ error: 'Categories unavailable' });
+        }
+
+        const catList = categories.map(item => item.category.split('|')[0]);
+        const catUnique = [... new Set(catList)].sort();
+
         res.json(catUnique);
     } catch (error) {
         console.error('Error fetching categories:', error);
@@ -111,6 +132,31 @@ app.get('/api/products/catalog/:num', async (req, res) => {
         res.json(catalog);
     } catch (error) {
         console.error('Error fetching product catalog:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Fetch featured products
+app.get('/api/products/featured', async (req, res) => {
+    const numFeatured = 5;
+    const filter = '-about_product -user_id -user_name -review_id -review_title -review_content -product_link';
+    try {
+        const catalog = await Products.find().select(filter);
+        if (!catalog) {
+            return res.status(404).json({ error: 'Featured products unavailable' });
+        }
+
+        const topRated = catalog.filter(product => {
+            return parseFloat(product.rating) > 4.4;
+        });
+
+        const seed = new Date().getDate();
+        const rng = seedrandom(seed);
+        //while ()
+
+        res.json(topRated);
+    } catch (error) {
+        console.error(`Error fetching featured products:`, error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
