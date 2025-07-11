@@ -49,14 +49,15 @@ const normalizeCategoryName = (category) => {
 // Transform backend product data to frontend format
 const transformProduct = (backendProduct) => {
   if (!backendProduct) return null;
+  const INR_to_USD = 0.01165;
 
   return {
     id: backendProduct.product_id,
     name: backendProduct.product_name,
-    price: parseFloat(
+    price: INR_to_USD * parseFloat(
       backendProduct.discounted_price.replace(/[^0-9.-]+/g, "") || 0
     ),
-    originalPrice: parseFloat(
+    originalPrice: INR_to_USD * parseFloat(
       backendProduct.actual_price.replace(/[^0-9.-]+/g, "") || 0
     ),
     rating: parseFloat(backendProduct.rating || 0),
