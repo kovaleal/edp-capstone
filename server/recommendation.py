@@ -67,8 +67,8 @@ def initialize_model():
         scaler = StandardScaler()
         scaled_features = scaler.fit_transform(features)
         weights = np.array(
-            [0.35, 0.25, 0.2, 0.2]
-        )  # 35% price, 25% rating, 20% rating_count, 20% category
+            [0.2, 0.15, 0.15, 0.5]
+        )  # 20% price, 15% rating, 15% rating_count, 50% category
         scaled_features = scaled_features * weights
 
         # Train model
