@@ -18,6 +18,27 @@ app.use(cors());
 app.use(express.json());
 //app.use(express.static(path.join(__dirname, './public/dist')));
 
+// Recommendation service configuration
+const RECOMMENDATION_SERVICE_URL =
+  process.env.RECOMMENDATION_SERVICE_URL || "http://localhost:5001";
+
+// Helper function to call recommendation service
+async function callRecommendationService(endpoint) {
+  try {
+    const fetch = (await import("node-fetch")).default;
+    const response = await fetch(`${RECOMMENDATION_SERVICE_URL}${endpoint}`);
+
+    if (!response.ok) {
+      throw new Error(`Recommendation service error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to call recommendation service:", error);
+    throw error;
+  }
+}
+
 // Connect to MongoDB
 mongoose
   .connect(mongo_url)
@@ -244,6 +265,87 @@ app.get("/api/products/:id", async (req, res) => {
   } catch (error) {
     console.error(`Error fetching product id=${id}:`, error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Recommendation endpoints
+// Health check for recommendation service
+app.get("/api/recommendations/health", async (req, res) => {
+  try {
+    const health = await callRecommendationService("/health");
+    res.json({
+      status: "success",
+      recommendation_service: health,
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: "error",
+      message: "Recommendation service unavailable",
+      error: error.message,
+    });
+  }
+});
+
+// Get recommendations for a product by product ID
+app.get("/api/recommendations/product/:productId", async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const recommendations = await callRecommendationService(
+      `/api/recommendations/product/${productId}`
+    );
+
+    // Transform the recommendations to match frontend format
+    const transformedRecommendations = recommendations.recommendations.map(
+      (rec) => ({
+        id: rec.product_id,
+        name: rec.product_name,
+        price: parseFloat(rec.discounted_price.replace(/[^0-9.-]+/g, "") || 0),
+        originalPrice: parseFloat(
+          rec.actual_price.replace(/[^0-9.-]+/g, "") || 0
+        ),
+        rating: parseFloat(rec.rating || 0),
+        ratingCount: parseInt(rec.rating_count.replace(/,/g, "") || 0),
+        category: rec.category,
+        image: rec.img_link,
+        onSale:
+          parseFloat(rec.discounted_price.replace(/[^0-9.-]+/g, "") || 0) <
+          parseFloat(rec.actual_price.replace(/[^0-9.-]+/g, "") || 0),
+        stock: Math.floor(Math.random() * 50) + 1, // Random stock since it's not in data
+        similarity: rec.similarity_score,
+        sameCategory: rec.same_category,
+      })
+    );
+
+    res.json({
+      success: true,
+      query_product: recommendations.query_product,
+      recommendations: transformedRecommendations,
+    });
+  } catch (error) {
+    console.error("Error fetching recommendations:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch recommendations",
+      message: error.message,
+    });
+  }
+});
+
+// Get recommendations by product index (for internal use)
+app.get("/api/recommendations/index/:index", async (req, res) => {
+  try {
+    const { index } = req.params;
+    const recommendations = await callRecommendationService(
+      `/api/recommendations/${index}`
+    );
+    res.json(recommendations);
+  } catch (error) {
+    console.error("Error fetching recommendations by index:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch recommendations",
+      message: error.message,
+    });
   }
 });
 

@@ -13,18 +13,18 @@ import {
   Shield,
   Truck,
   Check,
+  RotateCcw,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import ProductCard from "../components/product/ProductCard";
 import apiService from "../services/api";
 import { useCart } from "../hooks/useCart";
+import RecommendationSection from "../components/product/RecommendationSection";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -60,16 +60,6 @@ export default function ProductDetailPage() {
         }
 
         setProduct(productData);
-
-        // Get related products from same category
-        const allProducts = await apiService.getProducts();
-        const related = allProducts
-          .filter(
-            (p) =>
-              p.category === productData.category && p.id !== productData.id
-          )
-          .slice(0, 4);
-        setRelatedProducts(related);
       } catch (err) {
         console.error("Failed to load product:", err);
         setError("Failed to load product details");
@@ -536,37 +526,8 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Related Products */}
-        {relatedProducts.length > 0 && (
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">
-                You might also like
-              </h2>
-              <p className="text-slate-600">
-                More products from {product.category}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((relatedProduct) => (
-                <ProductCard key={relatedProduct.id} product={relatedProduct} />
-              ))}
-            </div>
-
-            <div className="text-center">
-              <Link
-                to={`/products?category=${encodeURIComponent(
-                  product.category
-                )}`}
-                className="inline-flex items-center space-x-2 glass-stronger hover:glass border border-white/30 px-6 py-3 rounded-xl text-blue-600 hover:text-blue-700 font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                <span>View all {product.category} products</span>
-                <ChevronRight className="h-5 w-5" />
-              </Link>
-            </div>
-          </div>
-        )}
+        {/* Recommendation Section */}
+        <RecommendationSection productId={id} />
       </div>
     </div>
   );

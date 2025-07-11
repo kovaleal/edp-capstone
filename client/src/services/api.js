@@ -222,7 +222,7 @@ class ApiService {
         ? `/api/products/catalog/${limit}`
         : "/api/products/catalog";
       const data = await this.request(endpoint);
-      return data.map(transformProduct);
+      return data.map(transformProduct).filter((product) => product !== null);
     } catch (error) {
       console.error(
         "Failed to fetch products from backend, using sample data:",
@@ -230,7 +230,9 @@ class ApiService {
       );
       // Fallback to sample data when backend is not available
       const sampleData = this.getSampleProducts();
-      const transformedData = sampleData.map(transformProduct);
+      const transformedData = sampleData
+        .map(transformProduct)
+        .filter((product) => product !== null);
       return limit ? transformedData.slice(0, limit) : transformedData;
     }
   }
@@ -353,11 +355,14 @@ class ApiService {
   async getFeaturedProducts(limit = 8) {
     try {
       const data = await this.request(`/api/products/featured/${limit}`);
-      return data.map(transformProduct);
+      return data.map(transformProduct).filter((product) => product !== null);
     } catch (error) {
       console.error("Failed to fetch featured products:", error);
       // Fallback to sample data when backend is not available
-      return this.getSampleProducts().slice(0, limit);
+      return this.getSampleProducts()
+        .slice(0, limit)
+        .map(transformProduct)
+        .filter((product) => product !== null);
     }
   }
 
@@ -445,6 +450,44 @@ class ApiService {
     } catch (error) {
       console.error("Backend health check failed:", error);
       return false;
+    }
+  }
+
+  // Recommendations API
+  async getRecommendations(productId) {
+    try {
+      const data = await this.request(
+        `/api/recommendations/product/${productId}`
+      );
+      if (data.success) {
+        return {
+          success: true,
+          queryProduct: data.query_product,
+          recommendations: data.recommendations,
+        };
+      } else {
+        throw new Error(data.error || "Failed to get recommendations");
+      }
+    } catch (error) {
+      console.error("Failed to fetch recommendations:", error);
+      return {
+        success: false,
+        error: error.message,
+        recommendations: [],
+      };
+    }
+  }
+
+  async checkRecommendationHealth() {
+    try {
+      const data = await this.request("/api/recommendations/health");
+      return data;
+    } catch (error) {
+      console.error("Recommendation service health check failed:", error);
+      return {
+        status: "error",
+        message: "Service unavailable",
+      };
     }
   }
 }
