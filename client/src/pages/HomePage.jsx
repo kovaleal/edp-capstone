@@ -129,7 +129,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-xl md:text-2xl text-slate-600 mb-12 leading-relaxed max-w-3xl mx-auto">
-                Shop millions of products with unbeatable prices.
+                Shop thousands of products with unbeatable prices.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
